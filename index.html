@@ -27,12 +27,6 @@ body {
   text-align: center;
   color: white;
   font-size: 30px;
-  opacity: 0;
-  animation: aparecer 3s forwards;
-}
-
-@keyframes aparecer {
-  to { opacity: 1; }
 }
 </style>
 </head>
@@ -42,7 +36,7 @@ body {
 <div id="mensaje">Yadira… eres mi universo 💫</div>
 
 <audio autoplay loop>
-  <source src="https://www.bensound.com/bensound-music/bensound-romantic.mp3" type="audio/mpeg">
+  <source src="https://www.bensound.com/bensound-music/bensound-romantic.mp3">
 </audio>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
@@ -54,56 +48,48 @@ const renderer = new THREE.WebGLRenderer({alpha:true});
 renderer.setSize(innerWidth, innerHeight);
 document.body.appendChild(renderer.domElement);
 
-camera.position.z = 50;
+camera.position.z = 40;
 
-// 🌌 GALAXIA PRO
-const particles = 6000;
+// 🌌 GALAXIA
+const particles = 5000;
 const geometry = new THREE.BufferGeometry();
 const positions = new Float32Array(particles * 3);
-const colors = new Float32Array(particles * 3);
 
 for (let i = 0; i < particles; i++) {
   let i3 = i * 3;
+  let r = Math.random() * 20;
+  let a = r * 2;
 
-  let radius = Math.random() * 25;
-  let angle = radius * 2;
-
-  positions[i3] = Math.cos(angle) * radius;
-  positions[i3 + 1] = (Math.random() - 0.5) * 4;
-  positions[i3 + 2] = Math.sin(angle) * radius;
-
-  // colores rosados
-  colors[i3] = 1;
-  colors[i3+1] = Math.random() * 0.5;
-  colors[i3+2] = 1;
+  positions[i3] = Math.cos(a) * r;
+  positions[i3+1] = (Math.random()-0.5)*3;
+  positions[i3+2] = Math.sin(a) * r;
 }
 
-geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+geometry.setAttribute('position', new THREE.BufferAttribute(positions,3));
 
 const material = new THREE.PointsMaterial({
-  size: 0.25,
-  vertexColors: true
+  color: 0xffccff,
+  size: 0.3
 });
 
 const galaxy = new THREE.Points(geometry, material);
 scene.add(galaxy);
 
-// 💖 CORAZONES 3D
+// 💖 CORAZONES
 const hearts = [];
-for(let i=0;i<50;i++){
-  const geo = new THREE.SphereGeometry(0.3,8,8);
-  const mat = new THREE.MeshBasicMaterial({color:0xff69b4});
-  const heart = new THREE.Mesh(geo,mat);
+for(let i=0;i<40;i++){
+  const geo = new THREE.SphereGeometry(1,16,16);
+  const mat = new THREE.MeshBasicMaterial({color:0xff1493});
+  const h = new THREE.Mesh(geo,mat);
 
-  heart.position.set(
-    (Math.random()-0.5)*50,
-    (Math.random()-0.5)*50,
-    (Math.random()-0.5)*50
+  h.position.set(
+    (Math.random()-0.5)*20,
+    (Math.random()-0.5)*20,
+    (Math.random()-0.5)*20
   );
 
-  scene.add(heart);
-  hearts.push(heart);
+  scene.add(h);
+  hearts.push(h);
 }
 
 // 💫 FRASES
@@ -123,32 +109,24 @@ palabras.forEach(texto=>{
   elementos.push({
     element:div,
     angle:Math.random()*Math.PI*2,
-    radius:20+Math.random()*10,
-    speed:0.002+Math.random()*0.003
+    radius:15+Math.random()*10,
+    speed:0.01
   });
 });
 
-// 🖱️ INTERACCIÓN
+// movimiento
 let mouseX=0, mouseY=0;
 
-document.addEventListener("mousemove",e=>{
-  mouseX=(e.clientX-innerWidth/2)/200;
-  mouseY=(e.clientY-innerHeight/2)/200;
+addEventListener("mousemove",e=>{
+  mouseX=(e.clientX-innerWidth/2)/100;
+  mouseY=(e.clientY-innerHeight/2)/100;
 });
 
-// 👆 TOCAR = EXPLOSIÓN
-document.addEventListener("click", ()=>{
-  hearts.forEach(h=>{
-    h.position.x+=(Math.random()-0.5)*10;
-    h.position.y+=(Math.random()-0.5)*10;
-  });
-});
-
-// 🔄 ANIMACIÓN
+// animación
 function animate(){
   requestAnimationFrame(animate);
 
-  galaxy.rotation.y += 0.003;
+  galaxy.rotation.y += 0.002;
 
   hearts.forEach(h=>{
     h.rotation.y += 0.05;
@@ -158,14 +136,14 @@ function animate(){
   camera.position.y += (-mouseY - camera.position.y)*0.05;
   camera.lookAt(scene.position);
 
-  // mover frases
   elementos.forEach(obj=>{
     obj.angle += obj.speed;
+
     let x=Math.cos(obj.angle)*obj.radius;
     let y=Math.sin(obj.angle)*obj.radius;
 
-    obj.element.style.transform=
-      `translate(${innerWidth/2 + x*10}px, ${innerHeight/2 + y*5}px)`;
+    obj.element.style.left = (innerWidth/2 + x*10) + "px";
+    obj.element.style.top = (innerHeight/2 + y*5) + "px";
   });
 
   renderer.render(scene,camera);
@@ -182,4 +160,4 @@ addEventListener("resize",()=>{
 </script>
 
 </body>
-</html>
+  </html>
