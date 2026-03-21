@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Para Yadira 💖</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: black;
+      font-family: Arial, sans-serif;
+    }
+
+    .texto {
+      position: absolute;
+      top: 40%;
+      width: 100%;
+      text-align: center;
+      color: white;
+      font-size: 28px;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="texto">
+  Yadira 💫 <br>
+  <span id="frase">Eres mi universo</span>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<script>
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer();
+
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  // Crear estrellas
+  const starsGeometry = new THREE.BufferGeometry();
+  const starsCount = 5000;
+
+  const positions = new Float32Array(starsCount * 3);
+
+  for(let i = 0; i < starsCount * 3; i++) {
+    positions[i] = (Math.random() - 0.5) * 1000;
+  }
+
+  starsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+  const starsMaterial = new THREE.PointsMaterial({
+    color: 0xffffff,
+    size: 1
+  });
+
+  const stars = new THREE.Points(starsGeometry, starsMaterial);
+  scene.add(stars);
+
+  camera.position.z = 5;
+
+  // Movimiento con mouse o dedo
+  let mouseX = 0;
+  let mouseY = 0;
+
+  document.addEventListener("mousemove", (event) => {
+    mouseX = (event.clientX - window.innerWidth / 2) / 100;
+    mouseY = (event.clientY - window.innerHeight / 2) / 100;
+  });
+
+  function animate() {
+    requestAnimationFrame(animate);
+
+    stars.rotation.y += 0.0005;
+    stars.rotation.x += 0.0002;
+
+    camera.position.x += (mouseX - camera.position.x) * 0.05;
+    camera.position.y += (-mouseY - camera.position.y) * 0.05;
+
+    camera.lookAt(scene.position);
+
+    renderer.render(scene, camera);
+  }
+
+  animate();
+
+  // Frases cambiantes
+  const frases = [
+    "Eres mi universo 💖",
+    "Contigo todo es más bonito ✨",
+    "Mi lugar favorito eres tú 💫",
+    "Te amo infinito 💕"
+  ];
+
+  let i = 0;
+  setInterval(() => {
+    document.getElementById("frase").innerText = frases[i];
+    i = (i + 1) % frases.length;
+  }, 3000);
+
+  // Ajustar pantalla
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+</script>
+
+</body>
+  </html>
