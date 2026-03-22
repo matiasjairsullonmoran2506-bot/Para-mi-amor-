@@ -3,230 +3,159 @@
 <head>
 <meta charset="UTF-8">
 <title>Para Yadira 💖</title>
-
 <style>
 body {
   margin: 0;
   overflow: hidden;
-  background: radial-gradient(circle, #020024, #000);
+  background: radial-gradient(circle, #0a0a2a, #000);
   font-family: Arial, sans-serif;
 }
 
-.frase {
-  position: absolute;
-  color: white;
-  font-size: 28px;
-  font-weight: bold;
-  text-shadow: 0 0 20px #ff69b4;
-}
-
-#mensaje {
-  position: absolute;
-  top: 35%;
+/* Estrellas */
+.stars {
+  position: fixed;
   width: 100%;
-  text-align: center;
-  font-size: 40px;
-  color: white;
-  animation: fade 3s forwards;
+  height: 100%;
+  background: transparent;
 }
 
-#boton {
+.star {
   position: absolute;
-  bottom: 40px;
+  width: 2px;
+  height: 2px;
+  background: white;
+  animation: twinkle 2s infinite alternate;
+}
+
+@keyframes twinkle {
+  from { opacity: 0.2; }
+  to { opacity: 1; }
+}
+
+/* Galaxia */
+.galaxy {
+  position: absolute;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
-  padding: 12px 25px;
-  background: #ff1493;
-  color: white;
-  border-radius: 20px;
-  cursor: pointer;
-  box-shadow: 0 0 20px pink;
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, #ff00cc, #3333ff, transparent);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: spin 25s linear infinite;
 }
 
-#carta {
-  display: none;
+@keyframes spin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Texto orbitando */
+.orbit {
   position: absolute;
-  top: 20%;
-  left: 10%;
-  width: 80%;
-  background: rgba(0,0,0,0.8);
-  color: white;
-  padding: 20px;
-  border-radius: 15px;
+  top: 50%;
+  left: 50%;
+  width: 450px;
+  height: 450px;
+  transform: translate(-50%, -50%);
+  animation: rotateText 20s linear infinite;
 }
 
-@keyframes fade {
-  from {opacity:0;}
-  to {opacity:1;}
+@keyframes rotateText {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(-360deg); }
+}
+
+.text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: 0 0;
+  font-size: 26px;
+  color: white;
+  text-shadow: 0 0 10px pink;
+}
+
+/* Corazones bien hechos */
+.heart {
+  position: absolute;
+  color: #ff4d6d;
+  font-size: 20px;
+  animation: float 6s infinite linear;
+}
+
+@keyframes float {
+  from {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-800px) scale(1.5);
+    opacity: 0;
+  }
 }
 </style>
 </head>
-
 <body>
 
-<div id="mensaje">Yadira… eres mi universo 💫</div>
-<div id="boton">💌 Toca aquí</div>
-
-<div id="carta">
-  <h2>Para ti 💖</h2>
-  <p>
-    Desde que llegaste a mi vida todo cambió…  
-    eres mi felicidad, mi paz y mi lugar favorito.  
-    Gracias por estos 2 años conmigo… te amo infinito ❤️
-  </p>
-</div>
-
-<audio id="musica" loop>
-  <source src="https://www.bensound.com/bensound-music/bensound-romantic.mp3">
-</audio>
-
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<div class="stars" id="stars"></div>
+<div class="galaxy"></div>
+<div class="orbit" id="orbit"></div>
 
 <script>
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, innerWidth/innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({alpha:true});
-renderer.setSize(innerWidth, innerHeight);
-document.body.appendChild(renderer.domElement);
-
-camera.position.z = 40;
-
-// 🌌 galaxia
-const geo = new THREE.BufferGeometry();
-const count = 5000;
-const pos = new Float32Array(count*3);
-
-for(let i=0;i<count;i++){
-  let i3=i*3;
-  let r=Math.random()*20;
-  let a=r*2;
-
-  pos[i3]=Math.cos(a)*r;
-  pos[i3+1]=(Math.random()-0.5)*3;
-  pos[i3+2]=Math.sin(a)*r;
+// 🌟 Crear estrellas
+for (let i = 0; i < 150; i++) {
+  let star = document.createElement("div");
+  star.className = "star";
+  star.style.top = Math.random() * window.innerHeight + "px";
+  star.style.left = Math.random() * window.innerWidth + "px";
+  document.getElementById("stars").appendChild(star);
 }
 
-geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+// 💬 FRASES (edítalas tú)
+const frases = [
+  "Te amo 💖",
+  "Eres mi universo 🌌",
+  "Mi Yadira hermosa ✨",
+  "Siempre contigo ❤️",
+  "Eres mi galaxia 🌠",
+  "Mi todo 💕"
+];
 
-const mat = new THREE.PointsMaterial({color:0xffccff,size:0.3});
-const galaxy = new THREE.Points(geo,mat);
-scene.add(galaxy);
+// 🌀 Colocar texto en círculo
+const orbit = document.getElementById("orbit");
+const radius = 200;
 
-// ✨ estrellas fondo
-const starsGeo = new THREE.BufferGeometry();
-const starsPos = new Float32Array(3000*3);
+frases.forEach((texto, i) => {
+  let angle = (i / frases.length) * (2 * Math.PI);
 
-for(let i=0;i<3000;i++){
-  let i3=i*3;
-  starsPos[i3]=(Math.random()-0.5)*200;
-  starsPos[i3+1]=(Math.random()-0.5)*200;
-  starsPos[i3+2]=(Math.random()-0.5)*200;
-}
+  let x = radius * Math.cos(angle);
+  let y = radius * Math.sin(angle);
 
-starsGeo.setAttribute('position', new THREE.BufferAttribute(starsPos,3));
-const stars = new THREE.Points(starsGeo,new THREE.PointsMaterial({color:0xffffff,size:0.5}));
-scene.add(stars);
+  let span = document.createElement("div");
+  span.className = "text";
+  span.innerText = texto;
 
-// 💖 corazones
-const hearts=[];
-for(let i=0;i<25;i++){
-  const shape=new THREE.Shape();
-  shape.moveTo(0,0);
-  shape.bezierCurveTo(0,0,-1,-1,-2,0);
-  shape.bezierCurveTo(-3,1,-1,3,0,4);
-  shape.bezierCurveTo(1,3,3,1,2,0);
-  shape.bezierCurveTo(1,-1,0,0,0,0);
+  span.style.transform = `translate(${x}px, ${y}px)`;
 
-  const h=new THREE.Mesh(
-    new THREE.ShapeGeometry(shape),
-    new THREE.MeshBasicMaterial({color:0xff1493})
-  );
-
-  h.scale.set(0.6,0.6,0.6);
-
-  h.position.set(
-    (Math.random()-0.5)*20,
-    (Math.random()-0.5)*20,
-    (Math.random()-0.5)*20
-  );
-
-  scene.add(h);
-  hearts.push(h);
-}
-
-// 🌠 estrellas fugaces
-function estrellaFugaz(){
-  const geo=new THREE.SphereGeometry(0.3,8,8);
-  const mat=new THREE.MeshBasicMaterial({color:0xffffff});
-  const star=new THREE.Mesh(geo,mat);
-
-  star.position.set(-50, Math.random()*20, 0);
-  scene.add(star);
-
-  let speed=1+Math.random()*2;
-
-  function mover(){
-    star.position.x += speed;
-    star.position.y -= speed*0.3;
-
-    if(star.position.x<50){
-      requestAnimationFrame(mover);
-    } else {
-      scene.remove(star);
-    }
-  }
-  mover();
-}
-
-setInterval(estrellaFugaz, 3000);
-
-// 💫 frases
-const palabras=["Mi niña 💖","Mi princesa 👑","Mi amor ❤️","Mi vida 🥰","Mi cielo ✨","Mi todo 💫"];
-const elementos=[];
-
-palabras.forEach(t=>{
-  const d=document.createElement("div");
-  d.className="frase";
-  d.innerText=t;
-  document.body.appendChild(d);
-
-  elementos.push({element:d,angle:Math.random()*6,radius:15,speed:0.01});
+  orbit.appendChild(span);
 });
 
-// 🎵 música + carta
-document.getElementById("boton").onclick=()=>{
-  document.getElementById("carta").style.display="block";
-  document.getElementById("musica").play();
-};
+// ❤️ Corazones bonitos
+function crearCorazon() {
+  let heart = document.createElement("div");
+  heart.className = "heart";
+  heart.innerHTML = "❤️";
 
-// animación
-function animate(){
-  requestAnimationFrame(animate);
+  heart.style.left = Math.random() * window.innerWidth + "px";
+  heart.style.top = window.innerHeight + "px";
 
-  galaxy.rotation.y+=0.002;
-  stars.rotation.y+=0.0005;
+  document.body.appendChild(heart);
 
-  hearts.forEach(h=>h.rotation.y+=0.05);
-
-  elementos.forEach(o=>{
-    o.angle+=o.speed;
-    let x=Math.cos(o.angle)*o.radius;
-    let y=Math.sin(o.angle)*o.radius;
-
-    o.element.style.left=(innerWidth/2 + x*10)+"px";
-    o.element.style.top=(innerHeight/2 + y*5)+"px";
-  });
-
-  renderer.render(scene,camera);
+  setTimeout(() => heart.remove(), 6000);
 }
-animate();
 
-// resize
-addEventListener("resize",()=>{
-  camera.aspect=innerWidth/innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth,innerHeight);
-});
+setInterval(crearCorazon, 300);
 </script>
 
 </body>
